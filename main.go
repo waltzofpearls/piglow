@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"time"
+
+	"github.com/wjessop/go-piglow"
 )
 
 func main() {
