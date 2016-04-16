@@ -7,47 +7,44 @@ import (
 	"github.com/wjessop/go-piglow"
 )
 
+type PiGlow struct {
+	*piglow.Piglow
+}
+
+func NewPiGlow() (*PiGlow, error) {
+	parent, err := piglow.NewPiglow()
+	if err != nil {
+		return nil, err
+	}
+	return &PiGlow{parent}, nil
+}
+
+func (p *PiGlow) Glow(fnSetLeds func(uint8)) {
+	for i := 0; i <= 255; i++ {
+		fnSetLeds(uint8(i))
+		p.Apply()
+		time.Sleep(10 * time.Millisecond)
+	}
+}
+
+func (p *PiGlow) Gloom(fnSetLeds func(uint8)) {
+	for i := 255; i >= 0; i-- {
+		fnSetLeds(uint8(i))
+		p.Apply()
+		time.Sleep(10 * time.Millisecond)
+	}
+}
+
 func main() {
-	p, err := piglow.NewPiglow()
+	p, err := NewPiGlow()
 	if err != nil {
 		log.Fatal("Couldn't create a Piglow: ", err)
 	}
 
-	// p.SetLED(0, 0)
-	// p.SetLED(1, 0)
-	p.SetTentacle(0, 255)
-	err = p.Apply()
-	if err != nil { // Apply the changes
-		log.Fatal("Couldn't apply changes: ", err)
-	}
-	time.Sleep(time.Second)
-	p.SetTentacle(0, 0)
-	err = p.Apply()
-	if err != nil { // Apply the changes
-		log.Fatal("Couldn't apply changes: ", err)
-	}
-	time.Sleep(time.Second)
-	p.SetTentacle(1, 255)
-	err = p.Apply()
-	if err != nil { // Apply the changes
-		log.Fatal("Couldn't apply changes: ", err)
-	}
-	time.Sleep(time.Second)
-	p.SetTentacle(1, 0)
-	err = p.Apply()
-	if err != nil { // Apply the changes
-		log.Fatal("Couldn't apply changes: ", err)
-	}
-	time.Sleep(time.Second)
-	p.SetTentacle(2, 255)
-	err = p.Apply()
-	if err != nil { // Apply the changes
-		log.Fatal("Couldn't apply changes: ", err)
-	}
-	time.Sleep(time.Second)
-	p.SetTentacle(2, 0)
-	err = p.Apply()
-	if err != nil { // Apply the changes
-		log.Fatal("Couldn't apply changes: ", err)
-	}
+	p.Glow(func(brightness uint8) {
+		p.SetAll(brightness)
+	})
+	p.Gloom(func(brightness uint8) {
+		p.SetAll(brightness)
+	})
 }
